@@ -1,0 +1,73 @@
+package ratings;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
+public class FileReader {
+    public static ArrayList<String> readFile(String file) {
+        try{
+            return new ArrayList<>(Files.readAllLines(Paths.get(file)));
+        } catch (IOException e) {
+            return new ArrayList<>();
+        }
+    }
+    public static ArrayList<Song> readSongs(String filename){
+        HashMap<String,Song> hash=new HashMap<>();
+        for(String line:readFile(filename)){
+            ArrayList<String> splits=new ArrayList<>(Arrays.asList(line.split(",")));
+            String songID=splits.get(0);
+            String artist=splits.get(1);
+            String title=splits.get(2);
+            String reviewerID=splits.get(3);
+            int rating=Integer.parseInt(splits.get(4));
+            if(!hash.containsKey(songID)){
+                hash.put(songID,new Song(title,artist,songID));
+            }
+            hash.get(songID).addRating(new Rating(reviewerID,rating));
+        }
+        return new ArrayList<>(hash.values());
+    }
+    public static ArrayList<Movie> readMovies(String filename){
+        HashMap<String,Movie> hash=new HashMap<>();
+        for(String line:readFile(filename)){
+            ArrayList<String> splits=new ArrayList<>(Arrays.asList(line.split(",")));
+            String title=splits.get(0);
+            if(!hash.containsKey(title)){
+                ArrayList<String> cast=new ArrayList<>();
+                for(int i=1;i<splits.size();i++){
+                    cast.add(splits.get(i));
+                }
+                hash.put(title,new Movie(title,cast));
+            }
+        }
+        return new ArrayList<>(hash.values());
+    }
+
+    public static ArrayList<Movie> readMovieRatings(ArrayList<Movie> movies,String filename){
+        HashMap<String,Movie> hash=new HashMap<>();
+        HashMap<String,Movie> newHash=new HashMap<>();
+        for(Movie movie:movies){
+            hash.put(movie.getTitle(),movie);
+        }
+        for(String line:readFile(filename)){
+            ArrayList<String> splits=new ArrayList<>(Arrays.asList(line.split(",")));
+            String title=splits.get(0);
+            String reviewerID=splits.get(1);
+            int rating=Integer.parseInt(splits.get(2));
+            if(hash.containsKey(title)){
+                if(reviewerID!=null&&!reviewerID.isEmpty()) {
+                    hash.get(title).addRating(new Rating(reviewerID, rating));
+                    newHash.put(title, hash.get(title));
+                }
+            }
+        }
+        return new ArrayList<>(newHash.values());
+    }
+
+
+
+}
