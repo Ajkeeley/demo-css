@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+
+//this code reads from a couple of files and with combination of some other methods sorts what the user is looking for 
 public class FileReader {
     public static ArrayList<String> readFile(String file) {
         try{
